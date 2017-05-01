@@ -53,18 +53,19 @@ def combine_thresh(img, color=False, dir_mag_thresh=False):
     hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS).astype(np.float)
     s_channel = hls[:,:,2]
     r_channel = img[:,:,0]
-    
+    b_channel = img[:,:,2]
     
     # Threshold color channel
-    s_thresh, r_thresh = (170,255), (220, 255)
+    s_thresh, r_thresh, b_thresh = (180,255), (220, 255), (200,255)
     s_binary = np.zeros_like(s_channel)
     r_binary = np.zeros_like(r_channel)
-    s_binary[(s_channel >= s_thresh[0]) & (s_channel <= s_thresh[1])] = 1
-    r_binary[(r_channel >= r_thresh[0]) & (s_channel <= r_thresh[1])] = 1
-    
+    b_binary = np.zeros_like(b_channel)
+    s_binary[(s_channel > s_thresh[0]) & (s_channel <= s_thresh[1])] = 1
+    r_binary[(r_channel > r_thresh[0]) & (r_channel <= r_thresh[1])] = 1
+    b_binary[(b_channel > b_thresh[0]) & (b_channel <= b_thresh[1])] = 1
 
-    combined_sr = np.zeros_like(s_binary)
-    combined_sr[((r_binary == 1) | (s_binary == 1))] = 1
+    combined_srb = np.zeros_like(s_binary)
+    combined_srb[((r_binary == 1) | (s_binary == 1) | (b_binary == 1))] = 1
   
 
     combined_binary = np.zeros_like(mag_binary)
@@ -72,8 +73,8 @@ def combine_thresh(img, color=False, dir_mag_thresh=False):
         combined_binary[((mag_binary ==1 ) & (dir_binary ==1))] = 1
         
     if color:
-        return np.dstack(( np.zeros_like(combined_binary), combined_grad, combined_sr))
+        return np.dstack(( np.zeros_like(combined_binary), combined_grad, combined_srb))
         
     else:
-        combined_sr[((combined_binary ==1) & (combined_sr ==1))] = 1
-        return combined_sr
+        combined_binary[((combined_binary ==1) | (combined_srb ==1))] = 1
+        return combined_binary

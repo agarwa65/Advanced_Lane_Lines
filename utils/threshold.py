@@ -56,7 +56,7 @@ def combine_thresh(img, color=False, dir_mag_thresh=False):
     b_channel = img[:,:,2]
     
     # Threshold color channel
-    s_thresh, r_thresh, b_thresh = (180,255), (220, 255), (200,255)
+    s_thresh, r_thresh, b_thresh = (179,255), (220, 255), (200,255)
     s_binary = np.zeros_like(s_channel)
     r_binary = np.zeros_like(r_channel)
     b_binary = np.zeros_like(b_channel)

@@ -64,7 +64,7 @@ def img_warped(img):
 
     # Define 4 source points src = np.float32([[,],[,],[,],[,]])
     # Define 4 destination points dst = np.float32([[,],[,],[,],[,]])
-    src_points = np.float32([[254,688],[599,451],[684,451],[1056,688]])
+    src_points = np.float32([[254,688],[592,451],[684,451],[1056,688]])
     #dst = np.float32([[250,720],[250,0],[1000,0],[1000,720])
     dst_points = np.float32([[l_offset,img_size[1]],[l_offset,0],[r_offset,0],[r_offset,img_size[1]]])
     # Get the transform matrix, M

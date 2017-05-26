@@ -78,3 +78,48 @@ def combine_thresh(img, color=False, dir_mag_thresh=False):
     else:
         combined_binary[((combined_binary ==1) | (combined_srb ==1))] = 1
         return combined_binary
+    
+    
+def combine_thresh_2(img, color=False, dir_mag_thresh=False):
+    #combine gradient threshold
+    mag_binary = mag_thresh(img, sobel_kernel=3, mag_thresh=(25, 255))
+    dir_binary = dir_threshold(img, sobel_kernel=3, dir_thresh=(0.7, 1.1))
+    
+    combined_grad = np.zeros_like(dir_binary)
+    combined_grad[((mag_binary == 1) & (dir_binary == 1))] = 1
+    
+    # Convert to HLS color space and separate the S channel
+    hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS).astype(np.float) 
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV).astype(np.float)
+    
+    ##white color 
+    #lower_white = np.array([18,0,180],dtype = np.uint8)
+    #upper_white = np.array([255,80,255], dtype = np.uint8)
+    #white_mask = cv2.inRange(hsv, lower_white, upper_white)
+    
+    ##yellow color 
+    #lower_yellow = np.array([0,100,100],dtype = np.uint8)
+    #upper_yellow = np.array([50,255,255], dtype = np.uint8)
+    #yellow_mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    
+    ## White Color
+    lower_white = np.array([0,210,0], dtype=np.uint8)
+    upper_white = np.array([255,255,255], dtype=np.uint8)
+    white_mask = cv2.inRange(hls, lower_white, upper_white)
+    
+    ## Yellow Color
+    lower_yellow = np.array([18,0,100], dtype=np.uint8)
+    upper_yellow = np.array([30,220,255], dtype=np.uint8)
+    yellow_mask = cv2.inRange(hls, lower_yellow, upper_yellow)
+    
+    combined_binary = np.zeros_like(white_mask)
+    
+    if dir_mag_thresh:
+        #combined_binary[((mag_binary ==1 ) & (dir_binary ==1))] = 255
+        combined_binary[((mag_binary ==1 ) )] = 255
+    if color:
+        return np.dstack((white_mask, yellow_mask, combined_binary))
+    else:
+        combined_binary[((white_mask == 255) | (yellow_mask == 255))] = 255
+        combined_binary[(combined_binary == 255)] = 1
+        return combined_binary    
